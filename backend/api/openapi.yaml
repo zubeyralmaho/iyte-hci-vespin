@@ -925,7 +925,7 @@ components:
             code:
               type: string
               description: Machine-readable error code (snake_case).
-              example: device_not_found
+              example: not_found
             message:
               type: string
               description: Human-readable error message.

@@ -292,6 +292,27 @@ Specific: `email_taken`, `already_registered`, `invalid_credentials`,
 Do NOT invent new codes ad-hoc. If you need a new code, add it to the spec
 and to the httpx error mapping in one PR.
 
+### HTTP status mapping
+
+| Error code | HTTP status |
+| --- | --- |
+| `validation_failed` | `400 Bad Request` |
+| `unauthorized` | `401 Unauthorized` |
+| `forbidden` | `403 Forbidden` |
+| `not_found` | `404 Not Found` |
+| `conflict` | `409 Conflict` |
+| `internal_error` | `500 Internal Server Error` |
+| `email_taken` | `409 Conflict` |
+| `already_registered` | `409 Conflict` |
+| `invalid_credentials` | `401 Unauthorized` |
+| `system_preset_immutable` | `403 Forbidden` |
+| `guest_endpoint_forbidden` | `403 Forbidden` |
+| `invalid_eq_profile_reference` | `400 Bad Request` |
+| `not_a_system_preset` | `400 Bad Request` |
+| `invalid_device_reference` | `400 Bad Request` |
+| `invalid_status_transition` | `400 Bad Request` |
+| `device_already_in_session` | `409 Conflict` |
+
 ## Logging
 
 Use stdlib `log/slog`:
