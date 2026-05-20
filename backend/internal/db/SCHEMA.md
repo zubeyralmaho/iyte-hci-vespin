@@ -93,31 +93,7 @@ Rules:
 - At most one row can have `is_default = true`.
 - The migration marks `Flat` as the default system preset.
 
-## EQ Bands
-
-EQ settings are stored as one logical JSONB value:
-
-```json
-{
-  "subBass": 0,
-  "bass": 0,
-  "mid": 0,
-  "treble": 0,
-  "presence": 0
-}
-```
-
-Rules:
-
-- Shape is a five-band object.
-- Values are integers from `-12` to `12`.
-- Validation belongs in the Go application layer via a typed struct.
-- We do not split bands into columns because the app never queries across
-  bands, and the five-band shape should remain evolvable.
-
-## Planned Migrations
-
-### devices
+### 000006_create_devices
 
 `devices`
 
@@ -140,7 +116,9 @@ Rules:
 - `active_eq_profile_id` must reference either a system profile or a custom
   profile owned by the same user. Enforce this in service logic before update.
 
-### party_sessions
+### 000007_create_party_sessions
+
+Creates `party_sessions` and `party_session_devices` together.
 
 `party_sessions`
 
@@ -174,6 +152,28 @@ Rules:
 - A device can only be added to sessions owned by the same user. Enforce this
   in service logic before insert.
 - Adding a duplicate device returns `device_already_in_session`.
+
+## EQ Bands
+
+EQ settings are stored as one logical JSONB value:
+
+```json
+{
+  "subBass": 0,
+  "bass": 0,
+  "mid": 0,
+  "treble": 0,
+  "presence": 0
+}
+```
+
+Rules:
+
+- Shape is a five-band object.
+- Values are integers from `-12` to `12`.
+- Validation belongs in the Go application layer via a typed struct.
+- We do not split bands into columns because the app never queries across
+  bands, and the five-band shape should remain evolvable.
 
 ## No Database Table
 

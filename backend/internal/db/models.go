@@ -10,6 +10,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Device struct {
+	ID                pgtype.UUID        `json:"id"`
+	UserID            pgtype.UUID        `json:"user_id"`
+	Name              string             `json:"name"`
+	DeviceType        string             `json:"device_type"`
+	FirmwareVersion   string             `json:"firmware_version"`
+	BatteryLevel      int32              `json:"battery_level"`
+	IsConnected       bool               `json:"is_connected"`
+	ActiveEqProfileID pgtype.UUID        `json:"active_eq_profile_id"`
+	PairedAt          pgtype.Timestamptz `json:"paired_at"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt         pgtype.Timestamptz `json:"updated_at"`
+}
+
 type EqProfile struct {
 	ID          pgtype.UUID        `json:"id"`
 	OwnerUserID pgtype.UUID        `json:"owner_user_id"`
@@ -19,6 +33,23 @@ type EqProfile struct {
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 	IsDefault   bool               `json:"is_default"`
+}
+
+type PartySession struct {
+	ID          pgtype.UUID        `json:"id"`
+	OwnerUserID pgtype.UUID        `json:"owner_user_id"`
+	Name        pgtype.Text        `json:"name"`
+	Status      string             `json:"status"`
+	StartedAt   pgtype.Timestamptz `json:"started_at"`
+	EndedAt     pgtype.Timestamptz `json:"ended_at"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
+type PartySessionDevice struct {
+	PartySessionID pgtype.UUID        `json:"party_session_id"`
+	DeviceID       pgtype.UUID        `json:"device_id"`
+	JoinedAt       pgtype.Timestamptz `json:"joined_at"`
 }
 
 type User struct {
