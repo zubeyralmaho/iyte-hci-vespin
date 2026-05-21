@@ -1,9 +1,68 @@
 {
   "common": {},
-  "auth": {},
+  "auth": {
+    "account": {
+      "guest": "Guest account"
+    },
+    "welcome": {
+      "title": "WELCOME",
+      "licence": "Licence Agreement",
+      "privacy": "Privacy Policy",
+      "start": "Start"
+    },
+    "chooser": {
+      "guest": "Continue as guest",
+      "login": "Log in to VESPIN",
+      "register": "Sign up to VESPIN",
+      "or": "or continue with"
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "invalidEmail": "Enter a valid email address.",
+      "passwordLength": "Password must be at least 8 characters.",
+      "passwordRequired": "Enter your password."
+    },
+    "fields": {
+      "displayName": "Display name",
+      "email": "Email",
+      "password": "Password"
+    },
+    "guest": {
+      "chooserLink": "Back",
+      "submit": "Continue",
+      "submitting": "Creating guest session...",
+      "subtitle": "Use Vespin without an email. You can register later and keep your data.",
+      "title": "Continue as guest"
+    },
+    "login": {
+      "guestLink": "Continue as guest",
+      "registerLink": "Create an account",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "subtitle": "Use your Vespin account to sync your speaker setup.",
+      "title": "Log in"
+    },
+    "logout": {
+      "submit": "Log out",
+      "submitting": "Logging out..."
+    },
+    "register": {
+      "loginLink": "Already have an account? Log in",
+      "submit": "Create account",
+      "submitting": "Creating account...",
+      "subtitle": "Register a new account, or convert your guest session if you are already using one.",
+      "title": "Create account"
+    },
+    "roles": {
+      "guest": "Guest",
+      "registered": "Registered"
+    }
+  },
   "devices": {},
   "eq": {},
   "party": {},
   "firmware": {},
-  "settings": {}
+  "settings": {
+    "title": "Settings"
+  }
 }

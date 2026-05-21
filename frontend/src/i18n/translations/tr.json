@@ -1,9 +1,68 @@
 {
   "common": {},
-  "auth": {},
+  "auth": {
+    "account": {
+      "guest": "Misafir hesap"
+    },
+    "welcome": {
+      "title": "HOSGELDIN",
+      "licence": "Lisans Sozlesmesi",
+      "privacy": "Gizlilik Politikasi",
+      "start": "Basla"
+    },
+    "chooser": {
+      "guest": "Misafir olarak devam et",
+      "login": "VESPIN'e giris yap",
+      "register": "VESPIN'e kayit ol",
+      "or": "veya devam et"
+    },
+    "errors": {
+      "generic": "Bir sorun olustu. Lutfen tekrar deneyin.",
+      "invalidEmail": "Gecerli bir e-posta adresi girin.",
+      "passwordLength": "Sifre en az 8 karakter olmali.",
+      "passwordRequired": "Sifrenizi girin."
+    },
+    "fields": {
+      "displayName": "Gorunen ad",
+      "email": "E-posta",
+      "password": "Sifre"
+    },
+    "guest": {
+      "chooserLink": "Geri",
+      "submit": "Devam et",
+      "submitting": "Misafir oturumu olusturuluyor...",
+      "subtitle": "Vespin'i e-posta olmadan kullanin. Daha sonra kayit olup verilerinizi koruyabilirsiniz.",
+      "title": "Misafir olarak devam et"
+    },
+    "login": {
+      "guestLink": "Misafir olarak devam et",
+      "registerLink": "Hesap olustur",
+      "submit": "Giris yap",
+      "submitting": "Giris yapiliyor...",
+      "subtitle": "Hoparlor kurulumunuzu senkronize etmek icin Vespin hesabinizi kullanin.",
+      "title": "Giris yap"
+    },
+    "logout": {
+      "submit": "Cikis yap",
+      "submitting": "Cikis yapiliyor..."
+    },
+    "register": {
+      "loginLink": "Zaten hesabiniz var mi? Giris yapin",
+      "submit": "Hesap olustur",
+      "submitting": "Hesap olusturuluyor...",
+      "subtitle": "Yeni hesap olusturun veya zaten misafir olarak kullaniyorsaniz oturumunuzu donusturun.",
+      "title": "Hesap olustur"
+    },
+    "roles": {
+      "guest": "Misafir",
+      "registered": "Kayitli"
+    }
+  },
   "devices": {},
   "eq": {},
   "party": {},
   "firmware": {},
-  "settings": {}
+  "settings": {
+    "title": "Ayarlar"
+  }
 }
