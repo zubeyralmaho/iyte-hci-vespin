@@ -55,8 +55,9 @@ adding them to the spec first.
 | `unauthorized` | 401 | Missing or invalid JWT token |
 | `forbidden` | 403 | Insufficient role or not resource owner |
 | `not_found` | 404 | Resource does not exist |
-| `validation_error` | 422 | Request body failed validation |
-| `email_already_exists` | 409 | Email already registered |
+| `validation_failed` | 400 | Request body failed validation |
+| `email_taken` | 409 | Email already registered |
+| `already_registered` | 409 | Account is already registered |
 | `internal_error` | 500 | Unexpected server error |
 
 ## Endpoint Groups
