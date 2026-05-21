@@ -749,6 +749,79 @@ Table:
   active  -> unknown : false
 ```
 
+## Implementation Phases
+
+Approved phase plan (one PR per phase). Phase 1 was shipped in commit
+`b2ec8a8`.
+
+### Phase 1 — Foundations + Auth
+
+`httpx.Optional[T]`, `users.sql` + sqlc regen, router restructure
+(`/healthz` + `/auth/*` public, everything else under `AuthMW`),
+`auth.RequireRegistered`, `auth.Handler` (`POST /auth/guest`, `POST /auth/register`
+dual-mode, `POST /auth/login`), `auth.ConvertGuest` transactional service +
+DTOs. Tests: ConvertGuest (DB-backed), JWT sign/verify, password hash/verify.
+
+Unblocker for every other phase. **~700 LoC.**
+
+### Phase 2 — User profile + Preferences
+
+`users.Handler`: `GET/PATCH /users/me`, `GET/PATCH /users/me/preferences`
+(latter two under `RequireRegistered`). `users.dto.go` with
+`httpx.Optional[string]` for `displayName`. No service. No new tests.
+
+Depends on Phase 1. Frontend unlock: profile + settings screens.
+**~200 LoC.**
+
+### Phase 3 — Devices
+
+`devices.Handler` full CRUD, `devices.UpdateWithEQValidation` service,
+DTOs with Optional fields for `name` + `activeEqProfileId`, default EQ
+profile UUID loaded at startup and passed to `devices.NewHandler`, sim
+field seeding via `math/rand/v2`. No new tests.
+
+Depends on Phase 1. Independent of Phase 4 (uses `db.Queries.GetAccessibleEQProfile`
+directly, doesn't import `eqprofiles`). **~350 LoC.**
+
+### Phase 4 — EQ profiles
+
+`eqprofiles.Handler` (list with `?type=` filter, get, create, update, delete,
+fork), `eqprofiles.Fork` service, DTOs with JSON↔Bands marshal helpers.
+Tests: Fork (DB-backed — the second CLAUDE-mandated DB test).
+
+Depends on Phase 1. **~400 LoC.**
+
+### Phase 5 — Party sessions
+
+`partysessions.Handler` full CRUD + add/remove device,
+`partysessions.Create` service (transactional), `partysessions.UpdateStatus`
+service, `transitions.go` with `legalTransition`, ended-session membership
+lockdown (Requirement 17). Tests: `legalTransition` table-driven unit test.
+
+Depends on Phase 1 + Phase 3 (device rows must exist for sessions to be
+meaningful). **~500 LoC.**
+
+### Phase 6 — Firmware check
+
+`firmware.Handler` `POST /firmware/check` (registered-only),
+`firmware.versions.go` with per-deviceType map, `firmware.NewHandler()`
+loses the `cfg` parameter.
+
+Depends on Phase 1 + Phase 3 (resolves device via `GetDeviceByIDAndUser` to
+read its type). **~100 LoC.**
+
+### Merge order
+
+```
+Phase 1 ──┬─► Phase 2 (users)
+          ├─► Phase 3 (devices) ──┬─► Phase 5 (party)
+          │                       └─► Phase 6 (firmware)
+          └─► Phase 4 (eq profiles)
+```
+
+Linear `1 → 2 → 3 → 4 → 5 → 6` for solo work. Phases 2/3/4 are independent
+after Phase 1 and can parallelize.
+
 ## Open Questions
 
 1. **firmware/check `currentVersion` body field.** Currently only the
