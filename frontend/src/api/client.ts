@@ -1,6 +1,6 @@
 import { ApiError, isApiErrorEnvelope } from "./error";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8080";
 
 let getAuthToken: () => string | null = () => null;
 let onUnauthorized: () => void = () => {};
@@ -34,8 +34,14 @@ function buildUrl(path: string, params?: Record<string, unknown>): string {
   return query ? `${url}?${query}` : url;
 }
 
-export async function vespinFetch<T>(options: FetchOptions): Promise<T> {
-  const { url, method = "GET", params, headers, data, signal } = options;
+export async function vespinFetch<T>(url: string, options?: RequestInit): Promise<T>;
+export async function vespinFetch<T>(options: FetchOptions): Promise<T>;
+export async function vespinFetch<T>(input: string | FetchOptions, init?: RequestInit): Promise<T> {
+  const generatedCall = typeof input === "string";
+  const fetchOptions = generatedCall
+    ? requestInitToFetchOptions(input, init)
+    : input;
+  const { url, method = "GET", params, headers, data, signal } = fetchOptions;
 
   const token = getAuthToken();
   const finalHeaders: Record<string, string> = {
@@ -66,6 +72,14 @@ export async function vespinFetch<T>(options: FetchOptions): Promise<T> {
     throw new ApiError(response.status, "unknown_error", `Request failed with status ${response.status}`);
   }
 
+  if (generatedCall) {
+    return {
+      data: body,
+      headers: response.headers,
+      status: response.status,
+    } as T;
+  }
+
   return body as T;
 }
 
@@ -75,6 +89,26 @@ function safeJsonParse(text: string): unknown {
   } catch {
     return undefined;
   }
+}
+
+function requestInitToFetchOptions(url: string, init?: RequestInit): FetchOptions {
+  const headers = headersToRecord(init?.headers);
+  const data = typeof init?.body === "string" ? safeJsonParse(init.body) : init?.body;
+
+  return {
+    url,
+    method: init?.method,
+    headers,
+    data,
+    signal: init?.signal ?? undefined,
+  };
+}
+
+function headersToRecord(headers?: HeadersInit): Record<string, string> | undefined {
+  if (!headers) return undefined;
+  if (headers instanceof Headers) return Object.fromEntries(headers.entries());
+  if (Array.isArray(headers)) return Object.fromEntries(headers);
+  return headers;
 }
 
 export default vespinFetch;
