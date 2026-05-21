@@ -69,7 +69,7 @@ func run() error {
 		DeviceHandler:   devices.NewHandler(queries, defaultEQID),
 		EQHandler:       eqprofiles.NewHandler(queries, pool),
 		PartyHandler:    partysessions.NewHandler(queries, pool),
-		FirmwareHandler: firmware.NewHandler(cfg),
+		FirmwareHandler: firmware.NewHandler(queries),
 	})
 
 	srv := &http.Server{
