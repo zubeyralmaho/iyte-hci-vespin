@@ -13,6 +13,7 @@ type routeRegistrar interface {
 
 type Deps struct {
 	AuthMW          func(http.Handler) http.Handler
+	AuthHandler     routeRegistrar
 	UserHandler     routeRegistrar
 	DeviceHandler   routeRegistrar
 	EQHandler       routeRegistrar
@@ -27,13 +28,14 @@ func NewRouter(deps Deps) http.Handler {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 	})
 
-	mount(r, "/users", deps.UserHandler)
+	mount(r, "/auth", deps.AuthHandler)
 
 	r.Group(func(r chi.Router) {
 		if deps.AuthMW != nil {
 			r.Use(deps.AuthMW)
 		}
 
+		mount(r, "/users", deps.UserHandler)
 		mount(r, "/devices", deps.DeviceHandler)
 		mount(r, "/eq-profiles", deps.EQHandler)
 		mount(r, "/party-sessions", deps.PartyHandler)

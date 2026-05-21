@@ -32,3 +32,15 @@ func Middleware(tokens *Tokens) func(http.Handler) http.Handler {
 		})
 	}
 }
+
+// RequireRegistered rejects requests whose JWT role is not "registered".
+// Must run after Middleware so the role is already in context.
+func RequireRegistered(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if RoleFromContext(r.Context()) != RoleRegistered {
+			httpx.WriteError(w, httpx.ErrGuestEndpointForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}

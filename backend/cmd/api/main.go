@@ -54,7 +54,8 @@ func run() error {
 
 	r := server.NewRouter(server.Deps{
 		AuthMW:          authMW,
-		UserHandler:     users.NewHandler(queries, pool, tokens),
+		AuthHandler:     auth.NewHandler(queries, pool, tokens),
+		UserHandler:     users.NewHandler(queries),
 		DeviceHandler:   devices.NewHandler(queries),
 		EQHandler:       eqprofiles.NewHandler(queries, pool),
 		PartyHandler:    partysessions.NewHandler(queries, pool),
