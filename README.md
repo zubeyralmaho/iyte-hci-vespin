@@ -1,92 +1,114 @@
 # Vespin
 
-Companion mobile app for the **Vespin Retro** series Bluetooth smart speakers.
+This project is a collaborative initiative developed for an HCI course at the Izmir Institute of Technology, bringing together students from the Department of Industrial Design and the Department of Computer Engineering.
 
-University HCI course project. **Hardware interaction is fully simulated** —
-no real Bluetooth, audio processing, firmware OTA, or device communication.
-The focus is a functional mobile app with a real backend, real database, and
-real auth, minus the embedded/IoT complexity.
+Vespin is a companion mobile app concept for the **Vespin Retro** series Bluetooth smart speakers. This project focuses on the mobile interaction model, supported by a fully functional API, database, and authentication flow.
+
+Please note: Hardware interaction is simulated. There is no real-time Bluetooth connectivity, audio processing, firmware OTA, or physical device communication; the focus remains on the user experience and the backend architecture.
 
 ---
 
 ## What's in this repo
 
-```
+```text
 vespin/
-├── backend/            Go API (chi + sqlc + Postgres)
-│   └── api/openapi.yaml   The HTTP contract — source of truth
-├── frontend/           Expo + React Native app
-├── deploy/             Docker Compose + Caddy + backup script for the VPS
-├── .github/workflows/  CI/CD pipelines
-├── CLAUDE.md           Constraints for Claude Code agents (root)
-├── README.md           This file
-└── .gitignore
+|-- backend/            Go API (chi + sqlc + Postgres)
+|   `-- api/openapi.yaml
+|                       HTTP contract and frontend codegen source
+|-- frontend/           Expo + React Native app
+|-- deploy/             Production compose, Caddy config, and backup script
+|-- .github/workflows/  CI, OpenAPI drift checks, and guarded deploy workflow
+|-- specs/              Project notes and design-system documentation
+|-- CLAUDE.md           Repository conventions for coding agents
+|-- README.md           This file
+`-- .gitignore
 ```
 
 Each major directory has its own `CLAUDE.md` with scoped conventions.
 
+## Scope
+
+The app models the expected user-facing flows for a smart speaker companion app:
+
+- Authentication, guest access, and account preferences
+- Device listing and simulated device management
+- EQ profile browsing, creation, editing, and forking
+- Party session creation and management
+- Simulated firmware check behavior
+
+The hardware-facing parts are intentionally mocked for the HCI scope. The code is
+structured so those integrations could be added later, but they are not part of
+this course project.
+
 ## Tech stack at a glance
 
 **Backend**
-- Go 1.23, [chi](https://github.com/go-chi/chi) for HTTP routing
-- [sqlc](https://sqlc.dev) for typed queries from raw SQL (NOT GORM)
-- [golang-migrate](https://github.com/golang-migrate/migrate) for SQL-first migrations
+
+- Go 1.23
+- [chi](https://github.com/go-chi/chi) for HTTP routing
+- [sqlc](https://sqlc.dev) for typed queries from raw SQL
+- [golang-migrate](https://github.com/golang-migrate/migrate) for SQL migrations
 - [pgx](https://github.com/jackc/pgx) as the Postgres driver
 - stdlib `log/slog` for structured logging
 - [golang-jwt](https://github.com/golang-jwt/jwt) for auth tokens
 - [go-playground/validator](https://github.com/go-playground/validator) for request validation
 
 **Frontend**
-- [Expo](https://expo.dev) (managed workflow)
+
+- [Expo](https://expo.dev) with React Native
 - [Expo Router](https://docs.expo.dev/router/introduction/) for file-based routing
-- [NativeWind](https://www.nativewind.dev) (Tailwind for React Native)
+- [NativeWind](https://www.nativewind.dev) for Tailwind-style React Native styling
 - [TanStack Query](https://tanstack.com/query) for server state
 - [Zustand](https://zustand-demo.pmnd.rs) for client state
-- [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev) for forms
-- [Orval](https://orval.dev) for OpenAPI-driven API client codegen
+- [React Hook Form](https://react-hook-form.com) and [Zod](https://zod.dev) for forms
+- [Orval](https://orval.dev) for OpenAPI-driven API client generation
 
-**Infra**
-- VPS, Ubuntu 24.04
-- Docker Compose for orchestration
-- Caddy for reverse proxy + automatic Let's Encrypt TLS
-- DuckDNS for the public domain
-- GitHub Container Registry for image hosting
+**Infrastructure**
+
+- Docker Compose for local and production stacks
+- Caddy config for reverse proxy and TLS in the production stack
+- GitHub Actions for backend checks, OpenAPI validation, generated-client drift
+  checks, and guarded backend image deployment
+- GitHub Container Registry support for backend and migration images
 
 ## Local development
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Node.js 20+ and pnpm 9+
-- Expo Go on your phone for physical-device testing
-- (Optional) Go 1.23+ for backend development, tests, and local tooling
-- (Optional) [sqlc](https://docs.sqlc.dev/en/latest/overview/install.html) CLI for query regeneration
+- Docker and Docker Compose
+- Node.js 20+
+- pnpm 9+
+- Expo Go on a phone for physical-device testing
+- Optional: Go 1.23+ for backend tests and local tooling
+- Optional: [sqlc](https://docs.sqlc.dev/en/latest/overview/install.html) CLI for query regeneration
 
 ### Backend
 
 ```bash
 cd backend
-docker compose up          # builds api, starts postgres, and runs migrations
+docker compose up
 ```
 
-API listens on `http://localhost:8080`. Hit `GET /healthz` to verify it's up.
-You do not need Go installed just to run this Docker-based local stack.
+The API listens on `http://localhost:8080`. Use `GET /healthz` to verify it is
+running. You do not need Go installed just to run the Docker-based local stack.
 
-Regenerating SQL types after editing `internal/db/queries/*.sql`:
+Regenerate SQL types after editing `internal/db/queries/*.sql`:
 
 ```bash
-cd backend && sqlc generate
+cd backend
+sqlc generate
 ```
 
-Adding a new migration:
+Add a new migration:
 
 ```bash
 cd backend/internal/db/migrations
-# Create both files; replace XXXXXX with the next 6-digit number
 touch 0000XX_describe_change.up.sql 0000XX_describe_change.down.sql
-# Edit, then restart the migrate container:
-docker compose -f docker-compose.yml run --rm migrate
+cd ../../..
+docker compose run --rm migrate
 ```
+
+Replace `0000XX` with the next migration number before committing.
 
 ### Frontend
 
@@ -94,18 +116,18 @@ docker compose -f docker-compose.yml run --rm migrate
 cd frontend
 pnpm install
 cp .env.example .env.local
-pnpm codegen               # regenerate API client from openapi.yaml
-pnpm start                 # opens Expo dev server, scan QR with Expo Go
+pnpm codegen
+pnpm start
 ```
 
 Set `EXPO_PUBLIC_API_URL` in `frontend/.env.local`:
 
-```
+```text
 EXPO_PUBLIC_API_URL=http://<your-lan-ip>:8080
 ```
 
-`<your-lan-ip>` because the phone running Expo Go is on the same network, not
-localhost. `localhost` only works in iOS simulator.
+Use your LAN IP because a phone running Expo Go is on the network, not inside
+your computer's localhost. `localhost` only works for local simulators.
 
 `EXPO_PUBLIC_*` values are bundled into the app, so only put public
 configuration there. API base URLs are fine; secrets, database passwords, and
@@ -113,42 +135,45 @@ JWT signing keys are not.
 
 ### OpenAPI spec
 
-The HTTP contract lives at `backend/api/openapi.yaml`. **It is the source of
-truth.** Backend handlers implement it; frontend types are generated from it.
+The HTTP contract lives at `backend/api/openapi.yaml`. It is the source of truth
+for both backend behavior and frontend generated types.
 
 When you edit the spec:
 
-1. Validate: `cd frontend && npx @redocly/cli@latest lint ../backend/api/openapi.yaml`
+1. Validate it: `cd frontend && npx @redocly/cli@latest lint ../backend/api/openapi.yaml`
 2. Regenerate the frontend client: `cd frontend && pnpm codegen`
-3. Commit both the spec change and the regenerated `frontend/src/api/generated/` together.
+3. Commit the spec change and regenerated `frontend/src/api/generated/` files together.
 
-CI enforces this: PRs that change the spec without regenerating the client
-will fail the **Orval drift check** job.
+CI enforces this with the OpenAPI validation and Orval drift-check workflow.
 
-## Deployment
+## GitHub workflow and deployment
 
-The full deploy guide lives in [`deploy/README.md`](./deploy/README.md). In
-summary: a push to `main` triggers GitHub Actions, which builds the API and
-migrate images, pushes them to GHCR, and SSHes into the VPS to pull and
-restart the stack. Caddy handles TLS automatically.
+The repository currently has GitHub Actions for:
 
-The frontend has no automated distribution. Daily development runs in Expo
-Go against the API on your LAN.
+- PR checks with path filtering for backend and frontend changes
+- OpenAPI validation and generated-client drift detection
+- Backend build checks on pushes to `main`
+- Optional backend image build, push, and VPS deployment through
+  `.github/workflows/backend.yml`
+
+Deployment is prepared but intentionally not the focus of this HCI submission.
+The deploy workflow is guarded by the `DEPLOY_ENABLED` repository variable or a
+manual `workflow_dispatch` run. When enabled, it builds backend and migration
+images, pushes them to GitHub Container Registry, syncs the `deploy/` directory
+to the VPS, restarts the Docker Compose stack, and checks `/healthz`.
 
 ## Working with Claude Code in this repo
 
 This codebase is designed to be agent-friendly. Each major directory has a
-`CLAUDE.md` file describing the conventions and constraints for that area.
-Read them in this order:
+`CLAUDE.md` file describing conventions and constraints for that area:
 
-1. [`CLAUDE.md`](./CLAUDE.md) — root, cross-cutting rules (project scope, naming)
-2. [`backend/CLAUDE.md`](./backend/CLAUDE.md) — Go conventions
-3. [`frontend/CLAUDE.md`](./frontend/CLAUDE.md) — RN/Expo conventions
+1. [`CLAUDE.md`](./CLAUDE.md) - root project scope and cross-cutting rules
+2. [`backend/CLAUDE.md`](./backend/CLAUDE.md) - Go/backend conventions
+3. [`frontend/CLAUDE.md`](./frontend/CLAUDE.md) - React Native/Expo conventions
 
-The single most important thing to know: **this project simulates hardware**.
-Do not propose real Bluetooth integration, real audio processing, real
-firmware updates, real WebSockets, or real device communication. See the
-root `CLAUDE.md` for the full scope boundaries.
+The most important scope rule: this project simulates hardware. Do not add real
+Bluetooth integration, real audio processing, real firmware updates, real
+WebSockets, or real device communication unless the project scope changes.
 
 ## License
 
