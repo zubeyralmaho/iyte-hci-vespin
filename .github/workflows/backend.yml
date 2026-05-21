@@ -1,11 +1,14 @@
 name: Backend — Build & Deploy
 
 # Triggered on push to main when backend code or deployment config changes.
-# Builds the API image and the migrate image, pushes both to GHCR, then
-# SSHes into the VPS to pull and restart.
 #
-# Manual triggers are allowed via workflow_dispatch (useful for redeploying
-# without a code change, e.g., after editing the Caddyfile).
+# The `test` job runs on every push as the CI signal (vet + build).
+#
+# The `build-and-push` and `deploy` jobs only run when the repo variable
+# DEPLOY_ENABLED is set to 'true' (Settings → Secrets and variables →
+# Actions → Variables), OR when triggered manually via workflow_dispatch.
+# Leave DEPLOY_ENABLED unset until the VPS, GHCR access, and required
+# secrets are provisioned — otherwise the deploy job will fail loudly.
 on:
   push:
     branches: [main]
@@ -60,6 +63,7 @@ jobs:
     name: Build & Push Images
     runs-on: ubuntu-latest
     needs: test
+    if: vars.DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       packages: write
@@ -120,8 +124,7 @@ jobs:
     name: Deploy to VPS
     runs-on: ubuntu-latest
     needs: build-and-push
-    # Only deploy on push (not on pull_request, even if that were to fire here).
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: vars.DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
     environment:
       name: production
       url: https://${{ vars.PRODUCTION_DOMAIN }}

@@ -37,7 +37,7 @@ Each major directory has its own `CLAUDE.md` with scoped conventions.
 - [go-playground/validator](https://github.com/go-playground/validator) for request validation
 
 **Frontend**
-- [Expo](https://expo.dev) (managed workflow, Expo Go only — no native builds)
+- [Expo](https://expo.dev) (managed workflow)
 - [Expo Router](https://docs.expo.dev/router/introduction/) for file-based routing
 - [NativeWind](https://www.nativewind.dev) (Tailwind for React Native)
 - [TanStack Query](https://tanstack.com/query) for server state
@@ -51,7 +51,6 @@ Each major directory has its own `CLAUDE.md` with scoped conventions.
 - Caddy for reverse proxy + automatic Let's Encrypt TLS
 - DuckDNS for the public domain
 - GitHub Container Registry for image hosting
-- EAS Update for OTA JS bundle delivery to teammates running Expo Go
 
 ## Local development
 
@@ -127,8 +126,8 @@ summary: a push to `main` triggers GitHub Actions, which builds the API and
 migrate images, pushes them to GHCR, and SSHes into the VPS to pull and
 restart the stack. Caddy handles TLS automatically.
 
-Frontend OTA updates go out via EAS Update on every merge to `main`.
-Teammates running Expo Go reload the app to pick up the new bundle.
+The frontend has no automated distribution. Daily development runs in Expo
+Go against the API on your LAN.
 
 ## Working with Claude Code in this repo
 

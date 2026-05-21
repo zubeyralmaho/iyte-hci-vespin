@@ -76,7 +76,7 @@ jobs:
         run: go build -v ./...
 
   # ---------------------------------------------------------------------------
-  # Frontend: typecheck and lint. No build step — EAS Update is the build.
+  # Frontend: typecheck and lint. No build step.
   # ---------------------------------------------------------------------------
   frontend:
     name: Frontend checks

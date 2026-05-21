@@ -109,8 +109,7 @@ These were debated and locked. Do not propose alternatives without strong cause.
 - NOT Kubernetes, NOT Traefik, NOT nginx (for this project)
 - GitHub Container Registry for images
 - DuckDNS for domain (HCI scope)
-- EAS Update for frontend OTA — NEVER suggest native builds, EAS Build, or
-  App Store / Play Store submission for this project
+- Frontend has no automated distribution; daily dev is Expo Go over LAN
 
 ## Conventions that apply across the repo
 

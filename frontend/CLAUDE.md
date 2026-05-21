@@ -15,7 +15,7 @@ names, and EAS slug all use **`vespin`**.
 
 ## Stack — locked
 
-- **Expo** managed workflow, Expo Go only (NO native builds, NO custom dev client)
+- **Expo** managed workflow
 - **Expo Router** for file-based routing (Expo's routing solution, built on
   React Navigation)
 - **NativeWind** (`nativewind`) — Tailwind for React Native
@@ -413,8 +413,6 @@ Expo exposes vars prefixed `EXPO_PUBLIC_*` to the JS bundle. The relevant one
 is `EXPO_PUBLIC_API_URL`:
 
 - Local dev: `http://<your-lan-ip>:8080` in `frontend/.env.local`.
-- Production: `https://vespin-api.duckdns.org`, baked in by CI from a repo
-  variable when EAS Update publishes.
 
 NEVER read other env vars in the JS bundle. NEVER put secrets in
 `EXPO_PUBLIC_*` — they're public.
@@ -441,24 +439,6 @@ For HCI scope, frontend tests are NOT required. Do not propose:
 
 If a teammate wants to add tests later, the patterns will be conventional —
 just keep components testable by keeping them thin and pure.
-
-## EAS Update — the deployment model
-
-The app is delivered via **EAS Update** to teammates running **Expo Go**. There
-is no app store, no native builds, no dev clients.
-
-- CI publishes a new update on every merge to `main` (see `frontend.yml`).
-- The update goes to the `production` channel.
-- Teammates reload Expo Go to fetch the new bundle.
-
-NEVER suggest:
-- Building an APK/IPA
-- Submitting to App Store / Play Store
-- Setting up an EAS Build pipeline
-- Creating a custom dev client
-- Detaching from the managed workflow
-
-The Expo Go + EAS Update flow is the model. Stay inside it.
 
 ## What never to do
 
