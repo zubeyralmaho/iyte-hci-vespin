@@ -162,6 +162,17 @@ manual `workflow_dispatch` run. When enabled, it builds backend and migration
 images, pushes them to GitHub Container Registry, syncs the `deploy/` directory
 to the VPS, restarts the Docker Compose stack, and checks `/healthz`.
 
+## Documentation
+
+Structured project documentation lives in the [`docs/`](./docs/) directory:
+
+- [Architecture](./docs/architecture.md) — system design and component overview
+- [API Reference](./docs/api.md) — endpoints, conventions, and error handling
+- [Data Model](./docs/data-model.md) — database schema and migrations
+- [Authentication](./docs/authentication.md) — auth flows and role-based access
+- [Development](./docs/development.md) — local setup and common tasks
+- [Deployment](./docs/deployment.md) — production infrastructure and CI/CD
+
 ## Working with Claude Code in this repo
 
 This codebase is designed to be agent-friendly. Each major directory has a
