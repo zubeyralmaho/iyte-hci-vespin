@@ -299,6 +299,38 @@ Rules:
 - NEVER do validation outside the schema. If the user enters something
   invalid, the schema catches it.
 
+## Design system rules
+
+The design system foundation lives in `src/theme/`, `src/components/ui/`,
+`src/components/layout/`, `src/components/brand/`, and
+`src/providers/SurfaceProvider.tsx`. The full spec is `specs/design-system.md`.
+
+- **Two-tier tokens.** Primitive values (`brand.maroon`, `brand.cream`,
+  `neutral.*`) live in `src/theme/colors.ts`. Components consume only the
+  semantic aliases (`background`, `surface`, `primary`, `onPrimary`, `ink`,
+  `muted`, `border`, `danger`). Never import `primitive.*` from a component.
+- **No raw hex in className.** Always go through a semantic token
+  (`bg-surface`, `text-ink`, `border-border`). Tailwind arbitrary values
+  (`bg-[#5C0F1A]`) are forbidden.
+- **All text goes through `AppText`.** No bare `<Text>` in `app/` or
+  `src/features/`. Variants: `display`, `title`, `body`, `button`, `caption`.
+  Tones: `default`, `muted`, `onPrimary`, `danger`. ZenDots is reserved for
+  `display` and `button` variants; body text uses the platform default.
+- **Surface tone is contextual.** `<Screen tone="primary">` flips nested
+  `AppText`/`Icon` defaults to `onPrimary` via `SurfaceContext`. Pass an
+  explicit `tone` prop to override.
+- **Icons go through `<Icon name="..." />`** (Ionicons wrapper). Icon-only
+  controls use `<IconButton ... accessibilityLabel="..." />` — the label is
+  a required prop, enforced by TypeScript. Minimum hit area is 44pt.
+- **Variants are plain object maps** inside each primitive's file. Do not
+  add `tailwind-variants`, `cva`, or similar.
+- **Composition boundary.** Components in `src/components/ui/` and
+  `src/components/layout/` MUST NOT import from `src/features/`. Layout
+  primitives are domain-agnostic.
+- **Brand mark.** `src/components/brand/Mark.tsx` renders
+  `assets/brand/mark.png`. Update the asset, not the component, to refresh
+  the mark.
+
 ## Styling — NativeWind only
 
 All styling goes through NativeWind className strings:
