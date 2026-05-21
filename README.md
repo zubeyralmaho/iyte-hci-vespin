@@ -57,19 +57,20 @@ Each major directory has its own `CLAUDE.md` with scoped conventions.
 ### Prerequisites
 
 - Docker & Docker Compose
-- Go 1.23+
 - Node.js 20+ and pnpm 9+
+- Expo Go on your phone for physical-device testing
+- (Optional) Go 1.23+ for backend development, tests, and local tooling
 - (Optional) [sqlc](https://docs.sqlc.dev/en/latest/overview/install.html) CLI for query regeneration
 
 ### Backend
 
 ```bash
 cd backend
-cp .env.example .env       # local secrets (gitignored)
-docker compose up          # starts api + postgres + runs migrations
+docker compose up          # builds api, starts postgres, and runs migrations
 ```
 
 API listens on `http://localhost:8080`. Hit `GET /healthz` to verify it's up.
+You do not need Go installed just to run this Docker-based local stack.
 
 Regenerating SQL types after editing `internal/db/queries/*.sql`:
 
@@ -92,7 +93,8 @@ docker compose -f docker-compose.yml run --rm migrate
 ```bash
 cd frontend
 pnpm install
-pnpm orval                 # regenerate API client from openapi.yaml
+cp .env.example .env.local
+pnpm codegen               # regenerate API client from openapi.yaml
 pnpm start                 # opens Expo dev server, scan QR with Expo Go
 ```
 
@@ -105,6 +107,10 @@ EXPO_PUBLIC_API_URL=http://<your-lan-ip>:8080
 `<your-lan-ip>` because the phone running Expo Go is on the same network, not
 localhost. `localhost` only works in iOS simulator.
 
+`EXPO_PUBLIC_*` values are bundled into the app, so only put public
+configuration there. API base URLs are fine; secrets, database passwords, and
+JWT signing keys are not.
+
 ### OpenAPI spec
 
 The HTTP contract lives at `backend/api/openapi.yaml`. **It is the source of
@@ -113,7 +119,7 @@ truth.** Backend handlers implement it; frontend types are generated from it.
 When you edit the spec:
 
 1. Validate: `cd frontend && npx @redocly/cli@latest lint ../backend/api/openapi.yaml`
-2. Regenerate the frontend client: `cd frontend && pnpm orval`
+2. Regenerate the frontend client: `cd frontend && pnpm codegen`
 3. Commit both the spec change and the regenerated `frontend/src/api/generated/` together.
 
 CI enforces this: PRs that change the spec without regenerating the client
